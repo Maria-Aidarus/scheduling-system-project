@@ -4,14 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+    <script>
+        function askForIdAndRedirect(baseUrl) {
+            const id = prompt("Please enter your ID:");
+            if (id) {
+                window.location.href = `${baseUrl}/${id}`;
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Welcome to the Scheduling System</h1>
     <p>This is the homepage.</p>
 
+    <h2>Tutors</h2>
     <ul>
-        <li><a href="/book">Book a Slot</a></li>
-        <li><a href="/example">Example Route</a></li>
+        <li><a href="/availability/add">Add Availability</a></li>
+        <li><a href="#" onclick="askForIdAndRedirect('/availability')">View Availability</a></li>
+        <li><a href="#" onclick="askForIdAndRedirect('/tutor-bookings')">View Tutor Bookings</a></li>
+    </ul>
+
+    <h2>Students</h2>
+    <ul>
+        <li><a href="/availability/view">Book Availability</a></li>
+        <li><a href="#" onclick="askForIdAndRedirect('/student-bookings')">View Student Bookings</a></li>
     </ul>
 </body>
 </html>

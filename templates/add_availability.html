@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Tutor Availability</title>
     <script>
-        // JavaScript function to display a notification
         function showNotification(message, type) {
             alert(`${type.toUpperCase()}: ${message}`);
         }
@@ -14,7 +13,6 @@
 <body>
     <h1>Manage Tutor Availability</h1>
 
-    <!-- Display success or error messages -->
     {% if message %}
         <script>
             showNotification("{{ message }}", "success");
@@ -25,25 +23,35 @@
         </script>
     {% endif %}
 
-    <!-- No notifications list rendered here -->
-
-    <form action="/availability" method="post">
+    <form action="/availability/add" method="post">
         <label for="tutor_id">Tutor ID:</label>
         <input type="number" id="tutor_id" name="tutor_id" required><br><br>
-
-        <label for="date">Date:</label>
+    
+        <label for="date">Start Date:</label>
         <input type="date" id="date" name="date" required><br><br>
-
+    
         <label for="start_time">Start Time:</label>
         <input type="time" id="start_time" name="start_time" required><br><br>
-
+    
         <label for="end_time">End Time:</label>
         <input type="time" id="end_time" name="end_time" required><br><br>
-
+    
         <label for="time_zone">Time Zone:</label>
         <input type="text" id="time_zone" name="time_zone" placeholder="e.g., UTC" required><br><br>
 
+        <!-- Recurrence Options -->
+        <label for="recurrence">Recurrence:</label>
+        <select id="recurrence" name="recurrence">
+            <option value="">None</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+        </select><br><br>
+
+        <label for="occurrences">Number of Occurrences:</label>
+        <input type="number" id="occurrences" name="occurrences" min="1" placeholder="e.g., 5"><br><br>
+    
         <button type="submit">Submit Availability</button>
-    </form>
+    </form>  
+    <a href="/">Go Back to Home</a>  
 </body>
 </html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Availabilities</title>
+    <script>
+        function filterTable() {
+            const filterValue = document.getElementById('filterValue').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#availabilityTable tbody tr');
+
+            rows.forEach(row => {
+                const subject = row.querySelector('td:nth-child(7)').innerText.toLowerCase();
+                const matches = subject.includes(filterValue);
+
+                row.style.display = matches ? '' : 'none';
+            });
+        }
+    </script>    
+</head>
+<body>
+    <h1>All Unbooked Availabilities</h1>
+
+    <!-- Filter Form -->
+    <div>
+        <label for="filterValue">Filter By Subject:</label>
+        <select id="filterValue" onchange="filterTable()">
+            <option value="">-- Select a Subject --</option>
+            <option value="math">Math</option>
+            <option value="science">Science</option>
+            <option value="english">English</option>
+            <option value="history">History</option>
+            <option value="geography">Geography</option>
+            <!-- Add other subjects as needed -->
+        </select>
+    </div>
+    
+    {% if availabilities %}
+        <table border="1" id="availabilityTable">
+            <thead>
+                <tr>
+                    <th>Tutor ID</th>
+                    <th>Tutor Name</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Time Zone</th>
+                    <th>Subject</th>
+                    <th>Book</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for availability, tutor in availabilities %}
+                <tr>
+                    <td>{{ tutor.id }}</td>
+                    <td>{{ tutor.name }}</td>
+                    <td>{{ availability.date }}</td>
+                    <td>{{ availability.start_time }}</td>
+                    <td>{{ availability.end_time }}</td>
+                    <td>{{ availability.time_zone }}</td>
+                    <td>{{ tutor.subject }}</td> <!-- Single subject -->
+                    <td>
+                        <form action="/book-slot" method="get">
+                            <input type="hidden" name="tutor_id" value="{{ tutor.id }}">
+                            <input type="hidden" name="date" value="{{ availability.date }}">
+                            <input type="hidden" name="start_time" value="{{ availability.start_time }}">
+                            <input type="hidden" name="end_time" value="{{ availability.end_time }}">
+                            <input type="hidden" name="time_zone" value="{{ availability.time_zone }}">
+                            <button type="submit">Book</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>            
+        </table>
+    {% else %}
+        <p>No availabilities found.</p>
+    {% endif %}
+
+    <a href="/">Go Back to Home</a>
+</body>
+</html>
