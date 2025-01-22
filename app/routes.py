@@ -10,7 +10,7 @@ routes = Blueprint('routes', __name__)
 # Home route
 @routes.route("/")
 def home():
-    return render_template("index.html")  # This looks for 'templates/index.html'
+    return render_template("index.html")
 
 def convert_timezone(start_time, end_time, past_timezone, new_timezone):
     """
