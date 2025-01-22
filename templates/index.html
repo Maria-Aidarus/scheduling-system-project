@@ -11,6 +11,12 @@
                 window.location.href = `${baseUrl}/${id}`;
             }
         }
+        function askForTimezoneAndRedirect(baseUrl) {
+            const timezone = prompt("Please enter your Time Zone (e.g., UTC, Europe/London):");
+            if (timezone) {
+                window.location.href = `${baseUrl}?timezone=${encodeURIComponent(timezone)}`;
+            }
+        }
     </script>
 </head>
 <body>
@@ -26,7 +32,7 @@
 
     <h2>Students</h2>
     <ul>
-        <li><a href="/availability/view">Book Availability</a></li>
+        <li><a href="#" onclick="askForTimezoneAndRedirect('/availability/view')">Book Availability</a></li>
         <li><a href="#" onclick="askForIdAndRedirect('/student-bookings')">View Student Bookings</a></li>
     </ul>
 </body>

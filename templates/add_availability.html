@@ -36,8 +36,15 @@
         <label for="end_time">End Time:</label>
         <input type="time" id="end_time" name="end_time" required><br><br>
     
+        <!-- Dropdown for Time Zones -->
         <label for="time_zone">Time Zone:</label>
-        <input type="text" id="time_zone" name="time_zone" placeholder="e.g., UTC" required><br><br>
+        <select id="time_zone" name="time_zone" required>
+            <option value="UTC">UTC</option>
+            <option value="America/New_York">America/New_York (EST)</option>
+            <option value="Europe/London">Europe/London (GMT)</option>
+            <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+            <option value="Australia/Sydney">Australia/Sydney (AEDT)</option>
+        </select><br><br>
 
         <!-- Recurrence Options -->
         <label for="recurrence">Recurrence:</label>

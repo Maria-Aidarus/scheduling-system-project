@@ -12,13 +12,74 @@ routes = Blueprint('routes', __name__)
 def home():
     return render_template("index.html")  # This looks for 'templates/index.html'
 
+def convert_timezone(start_time, end_time, past_timezone, new_timezone):
+    """
+    Converts start and end times from one timezone to another.
+    
+    Parameters:
+    - start_time (str): Start time in the format 'HH:MM:SS' or 'HH:MM'.
+    - end_time (str): End time in the format 'HH:MM:SS' or 'HH:MM'.
+    - past_timezone (str): Original timezone of the times.
+    - new_timezone (str): Target timezone to convert the times to.
+    
+    Returns:
+    - tuple: Converted start and end times as strings in the format 'HH:MM:SS'.
+    """
+    # Parse the input times
+    try:
+        start_time_obj = datetime.strptime(start_time, "%H:%M:%S")
+    except ValueError:
+        start_time_obj = datetime.strptime(start_time, "%H:%M")
+    
+    try:
+        end_time_obj = datetime.strptime(end_time, "%H:%M:%S")
+    except ValueError:
+        end_time_obj = datetime.strptime(end_time, "%H:%M")
+    
+    # Define the timezones
+    try:
+        from_tz = pytz.timezone(past_timezone)
+        to_tz = pytz.timezone(new_timezone)
+    except pytz.UnknownTimeZoneError as e:
+        raise ValueError(f"Invalid timezone: {str(e)}")
+    
+    # Localize the times in the original timezone
+    now = datetime.now()  # Current date for localization
+    start_time_localized = from_tz.localize(datetime.combine(now.date(), start_time_obj.time()))
+    end_time_localized = from_tz.localize(datetime.combine(now.date(), end_time_obj.time()))
+    
+    # Convert to the target timezone
+    start_time_converted = start_time_localized.astimezone(to_tz).strftime("%H:%M:%S")
+    end_time_converted = end_time_localized.astimezone(to_tz).strftime("%H:%M:%S")
+    
+    return start_time_converted, end_time_converted
+
 @routes.route("/availability/view", methods=["GET"])
 def view_availability():
-    # Fetch only unbooked availability records
+    # Get the selected timezone from the query parameter (default to UTC)
+    selected_timezone = request.args.get("timezone", "UTC")
+
+    # Fetch all unbooked availabilities and their associated tutors
     availabilities = db.session.query(Availability, Tutor).join(Tutor).filter(Availability.is_booked == False).all()
-    
-    # Render the availability list template
-    return render_template("view_availability.html", availabilities=availabilities)
+
+    # Process the availabilities and convert the times to the selected timezone
+    converted_availabilities = []
+    for availability, tutor in availabilities:
+        start_time_converted, end_time_converted = convert_timezone(
+            availability.start_time.strftime("%H:%M:%S"),
+            availability.end_time.strftime("%H:%M:%S"),
+            availability.time_zone,
+            selected_timezone
+        )
+        converted_availabilities.append({
+            "tutor": tutor,
+            "availability": availability,
+            "start_time_converted": start_time_converted,
+            "end_time_converted": end_time_converted,
+            "converted_timezone": selected_timezone
+        })
+
+    return render_template("view_availability.html", availabilities=converted_availabilities, timezone=selected_timezone)
 
 @routes.route("/availability/add", methods=["GET", "POST"])
 def add_availability():
@@ -242,20 +303,3 @@ def notifications():
     # Log or process the notification here (e.g., send an email or log to a database)
     # For simplicity, we’ll just return a success response.
     return jsonify({"message": "Notification sent successfully"})
-
-# Time zone conversion utility
-@routes.route("/convert-time", methods=["POST"])
-def convert_time():
-    data = request.json
-    try:
-        date_time = datetime.fromisoformat(data["date_time"])
-        from_tz = pytz.timezone(data["from_time_zone"])
-        to_tz = pytz.timezone(data["to_time_zone"])
-
-        # Localize the input time and convert to the target time zone
-        localized_time = from_tz.localize(date_time)
-        converted_time = localized_time.astimezone(to_tz)
-
-        return jsonify({"converted_time": converted_time.isoformat()})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
