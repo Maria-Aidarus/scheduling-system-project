@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tutor Availability</title>
+    <script>
+        // JavaScript function to display a notification
+        function showNotification(message, type) {
+            alert(`${type.toUpperCase()}: ${message}`);
+        }
+    </script>
+</head>
+<body>
+    <h1>Manage Tutor Availability</h1>
+
+    <!-- Display success or error messages -->
+    {% if message %}
+        <script>
+            showNotification("{{ message }}", "success");
+        </script>
+    {% elif error %}
+        <script>
+            showNotification("{{ error }}", "error");
+        </script>
+    {% endif %}
+
+    <!-- No notifications list rendered here -->
+
+    <form action="/availability" method="post">
+        <label for="tutor_id">Tutor ID:</label>
+        <input type="number" id="tutor_id" name="tutor_id" required><br><br>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <label for="start_time">Start Time:</label>
+        <input type="time" id="start_time" name="start_time" required><br><br>
+
+        <label for="end_time">End Time:</label>
+        <input type="time" id="end_time" name="end_time" required><br><br>
+
+        <label for="time_zone">Time Zone:</label>
+        <input type="text" id="time_zone" name="time_zone" placeholder="e.g., UTC" required><br><br>
+
+        <button type="submit">Submit Availability</button>
+    </form>
+</body>
+</html>

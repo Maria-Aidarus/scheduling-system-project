@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tutor.name }}'s Availability</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ tutor.name }}'s Availability</h1>
+
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% elif availabilities %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Time Zone</th>
+                        <th>Book Slot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for availability in availabilities %}
+                    <tr>
+                        <td>{{ availability.date }}</td>
+                        <td>{{ availability.start_time.strftime('%H:%M') }}</td>
+                        <td>{{ availability.end_time.strftime('%H:%M') }}</td>
+                        <td>{{ availability.time_zone }}</td>
+                        <td>
+                            <form action="/book" method="post" style="display:inline;">
+                                <input type="hidden" name="tutor_id" value="{{ tutor.id }}">
+                                <input type="hidden" name="Date" value="{{ availability.date }}">
+                                <input type="hidden" name="start_time" value="{{ availability.start_time.strftime('%H:%M') }}">
+                                <input type="hidden" name="end_time" value="{{ availability.end_time.strftime('%H:%M') }}">
+                                <input type="hidden" name="time_zone" value="{{ availability.time_zone }}">
+                                <button type="submit">Book Slot</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No availability found for this tutor.</p>
+        {% endif %}
+
+        <a href="/">Go Back to Home</a>
+    </div>
+</body>
+</html>
